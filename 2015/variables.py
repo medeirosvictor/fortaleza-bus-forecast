@@ -1,3 +1,13 @@
+# ==============================================================================
+# Variables — Holiday and holiday-eve definitions for Fortaleza, Ceara, Brazil
+#
+# Defines Brazilian national holidays + Ceara/Fortaleza local holidays for
+# 2015, 2018, and 2020. Used as binary features (is_holiday, is_holiday_eve)
+# in the ML models — ridership patterns change significantly on holidays.
+#
+# Format: [holiday_name, day, month]
+# ==============================================================================
+
 day_of_week_translator = {
     0: "Domingo",
     1: "Segunda",

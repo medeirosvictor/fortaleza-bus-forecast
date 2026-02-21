@@ -19,3 +19,7 @@ helper_scripts/dfs_2015/*
 top100_linhas_data_model*
 .vscode
 .vscode/*
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+__pycache__/
+**/__pycache__/
