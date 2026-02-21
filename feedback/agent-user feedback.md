@@ -21,7 +21,7 @@
 
 ### 2.3 — COVID-Aware Analysis for 2020
 - Either exclude 2020 from the main comparison or add a "COVID impact" section
-- 2020 data without controlling for the pandemic is misleading — ridership dropped 60-80% in many cities
+- 2020 data without controlling for the pandemic is misleading — ridership dropped 60–80% in many cities
 - Could be interesting: train on pre-COVID, predict during COVID, measure the "anomaly"
 
 ### 2.4 — Feature Importance Analysis
@@ -42,12 +42,11 @@
 
 ## Phase 3: Architecture & Extension (High effort, portfolio/production value)
 
-**Goal:** Transform from a thesis notebook into a reusable, extensible project.
+**Goal:** Transform from a thesis project into a reusable, extensible tool.
 
-### 3.1 — Modular Python Package ✅ MOSTLY DONE
-- `src/fortaleza_bus_forecast/` package created with `data/`, `models/`, `visualization/` modules
-- Installable via `pip install -e ".[full]"`
-- **Remaining:** Notebooks still contain duplicated logic — ideally they should become thin wrappers around the package
+### 3.1 — Thin Notebook Wrappers
+- `src/fortaleza_bus_forecast/` package exists with `data/`, `models/`, `visualization/` modules
+- **Remaining:** Notebooks still contain duplicated logic (model training loops, metric computation). Ideally they should become thin wrappers calling package functions.
 
 ### 3.2 — Experiment Tracking
 - Add MLflow or Weights & Biases for experiment tracking
@@ -64,7 +63,7 @@
 ### 3.4 — Modern ML Approaches
 - Try gradient-boosted models with native categorical support (CatBoost, LightGBM categorical mode)
 - Explore Prophet or NeuralProphet for the time-series framing — they handle holidays and seasonality natively
-- Consider a simple LSTM or Transformer for the time-series approach (the neural network notebooks are incomplete)
+- Consider a simple LSTM or Transformer for the time-series approach
 
 ### 3.5 — Interactive Dashboard
 - Build a Streamlit or Gradio app that:
