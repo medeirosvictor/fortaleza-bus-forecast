@@ -74,6 +74,22 @@ helper_scripts/
   zero_filler.py                    # Fills missing (line, hour) combos with 0
   helper-funs.py                    # Shared utils: get_performance(), week_of_month()
 
+src/fortaleza_bus_forecast/         # Reusable Python package (Phase 3.1)
+  __init__.py                       # Package root (v0.1.0)
+  config.py                         # Feature lists, constants, paths, supported years
+  data/
+    __init__.py
+    holidays.py                     # Holiday/eve definitions for 2015/2018/2020
+    loader.py                       # Load processed CSVs into DataFrames
+    preprocessor.py                 # Feature engineering: holidays, one-hot, cyclical, week_of_month
+  models/
+    __init__.py
+    evaluator.py                    # Metrics (R², RMSE, MAE, MAPE), baseline predictions
+    trainer.py                      # Model suite builder, train_and_evaluate, train_per_line
+  visualization/
+    __init__.py
+    plots.py                        # Thesis-quality plots: pred vs actual, hourly, comparisons
+
 dados-para-modelos/                 # Pre-processed CSVs for top-100 lines (2015, 2018, 2020)
 performances/                       # Model performance CSVs (per line, per config)
 predict-vs-real/                    # Prediction output CSVs for plotting
@@ -105,7 +121,7 @@ todo.txt                            # Original thesis writing TODOs and experime
 - **MAE** (mean absolute error)
 - **MAPE** (mean absolute percentage error)
 
-Computed via `helper_scripts/helper-funs.py::get_performance()`.
+Computed via `src/fortaleza_bus_forecast/models/evaluator.py` (or legacy `helper_scripts/helper-funs.py`).
 
 ## Feature Engineering Notes
 
@@ -119,5 +135,6 @@ Computed via `helper_scripts/helper-funs.py::get_performance()`.
 
 - Data files (CSVs, raw data) are **gitignored** — only processed/model-ready CSVs in `dados-para-modelos/` are tracked.
 - Column names mix Portuguese and English (`validacoes_por_hora` vs `validations_per_hour`) depending on the notebook/year.
-- The project uses **Jupyter notebooks** as the primary development environment — no standalone Python scripts for model training.
-- Python 3.x with pandas, scikit-learn, xgboost, lightgbm, matplotlib, seaborn, numpy.
+- The project uses **Jupyter notebooks** as the primary development environment. Shared logic lives in `src/fortaleza_bus_forecast/` (installable via `pip install -e .`).
+- Python 3.10+ with pandas, scikit-learn, xgboost, lightgbm, matplotlib, seaborn, numpy.
+- The `src/` package can be imported as `from fortaleza_bus_forecast.data import load_year_data` etc. — see `pyproject.toml` for install config.

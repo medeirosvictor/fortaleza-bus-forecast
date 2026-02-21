@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "fortaleza-bus-forecast"
+version = "0.1.0"
+description = "Passenger boarding prediction for Fortaleza's public bus transit system"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Victor Medeiros"},
+]
+
+dependencies = [
+    "pandas>=1.5",
+    "numpy>=1.23",
+    "scikit-learn>=1.2",
+    "matplotlib>=3.6",
+    "seaborn>=0.12",
+]
+
+[project.optional-dependencies]
+xgboost = ["xgboost>=1.7"]
+lightgbm = ["lightgbm>=3.3"]
+full = ["xgboost>=1.7", "lightgbm>=3.3", "shap>=0.42"]
+dev = ["jupyter", "ipython"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

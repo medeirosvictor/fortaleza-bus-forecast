@@ -122,9 +122,10 @@ Best-performing models achieve **R² > 0.95** on high-traffic bus lines, accurat
 ### Installation
 
 ```bash
-git clone https://github.com/<your-username>/onboarding-prediction-bustransit-fortaleza.git
-cd onboarding-prediction-bustransit-fortaleza
-pip install -r requirements.txt
+git clone https://github.com/medeirosvictor/fortaleza-bus-forecast.git
+cd fortaleza-bus-forecast
+pip install -e ".[full]"   # Installs package + xgboost, lightgbm, shap
+# or: pip install -r requirements.txt  (minimal deps only)
 ```
 
 ### Running
@@ -134,6 +135,30 @@ pip install -r requirements.txt
 3. Run **`2015/05-per-line-models-2015.ipynb`** for the core modeling workflow
 4. See **`04-results.ipynb`** for aggregated results and visualizations
 5. Check **`03-cross-year-comparison.ipynb`** for cross-year generalization analysis
+
+---
+
+## 📦 Python Package
+
+The project includes a reusable Python package at `src/fortaleza_bus_forecast/`:
+
+```python
+from fortaleza_bus_forecast.data import load_year_data, get_holidays
+from fortaleza_bus_forecast.data.preprocessor import prepare_features
+from fortaleza_bus_forecast.models import build_model_suite, train_and_evaluate
+from fortaleza_bus_forecast.visualization import plot_predictions_vs_actual
+
+# Load data
+df = load_year_data(2015)
+
+# Feature engineering
+df = prepare_features(df, year=2015, cyclical=False)
+
+# Build and train models
+models = build_model_suite()
+```
+
+Install in development mode: `pip install -e ".[full]"`
 
 ---
 
@@ -240,9 +265,9 @@ Os melhores modelos alcançaram **R² > 0,95** nas linhas de maior movimento, ca
 #### Instalação
 
 ```bash
-git clone https://github.com/<seu-usuario>/onboarding-prediction-bustransit-fortaleza.git
-cd onboarding-prediction-bustransit-fortaleza
-pip install -r requirements.txt
+git clone https://github.com/medeirosvictor/fortaleza-bus-forecast.git
+cd fortaleza-bus-forecast
+pip install -e ".[full]"   # Instala o pacote + xgboost, lightgbm, shap
 ```
 
 #### Execução

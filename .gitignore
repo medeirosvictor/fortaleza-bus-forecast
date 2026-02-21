@@ -23,3 +23,6 @@ top100_linhas_data_model*
 **/.ipynb_checkpoints/
 __pycache__/
 **/__pycache__/
+*.egg-info/
+dist/
+build/
