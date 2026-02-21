@@ -20,7 +20,7 @@ The 2020 nozerofill only has March–December data, but the zero-filler added Ja
 ## Pending Pipeline Fixes
 
 ### Fix zero-filler year hardcoding
-`zero_filler.py` uses `monthrange(2020, mes)` even for 2015 data. Should be parameterized by year.
+`scripts/zero_filler.py` uses `monthrange(2020, mes)` even for 2015 data. Should be parameterized by year.
 
 ### Don't zero-fill months with no source data
 The zero-filler should only fill gaps *within* the date range of existing data, not fabricate rows for months where no raw data exists.

@@ -1,30 +1,25 @@
-df_input.zip
-df_input.csv
-.amlignore
-.amlignore.amltmp
-*.amltmp
-*.amltemp
-data_input_zerofill.csv
-data_input_nozerofill.csv
-data_input_zerofill_2018.csv
-data_input_nozerofill_2018.csv
-data_input_zerofill_2020.csv
-data_input_nozerofill_2020.csv
-data-input-2015-2018-2020.zip
-data_input_zerofill_2015.csv
-data_input_nozerofill_2015.csv
-2018/raw
-raw-data-backup/
-helper_scripts/raw-2015/*
-helper_scripts/dfs_2015/*
-top100_linhas_data_model*
-model-data/**/*.csv
-.vscode
-.vscode/*
-.ipynb_checkpoints/
-**/.ipynb_checkpoints/
+# Python
 __pycache__/
 **/__pycache__/
 *.egg-info/
 dist/
 build/
+.mypy_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# IDE
+.vscode/
+
+# Data — raw/intermediate CSVs (large, not tracked)
+data_input_*.csv
+df_input.csv
+df_input.zip
+data-input-*.zip
+top100_linhas_data_model*
+raw-data-backup/
+
+# Model-data CSVs are extracted from data.zip via `make data`
+model-data/**/*.csv

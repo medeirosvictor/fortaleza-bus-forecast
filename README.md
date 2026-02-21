@@ -30,31 +30,31 @@ Best-performing models achieve **R² > 0.95** on high-traffic bus lines, accurat
 ## 🏗️ Project Structure
 
 ```
-├── 01-data-processing.ipynb          # Data wrangling, top-100 line filtering, feature engineering
-├── 02-data-visualization.ipynb       # EDA — hourly, daily, weekly, monthly seasonality
-├── 03-cross-year-comparison.ipynb    # Cross-year comparison (2015/2018/2020), ensemble models
-├── 04-results.ipynb                  # Aggregated results, scatter plots (predicted vs actual)
+├── notebooks/
+│   ├── 01-data-processing.ipynb          # Data wrangling pipeline (reference — needs raw data)
+│   ├── 02-data-visualization.ipynb       # EDA — hourly, daily, weekly, monthly seasonality
+│   ├── 03-cross-year-comparison.ipynb    # Cross-year comparison (2015/2018/2020), ensemble models
+│   ├── 04-results.ipynb                  # Aggregated results, scatter plots (predicted vs actual)
+│   ├── 05-per-line-models.ipynb          # Per-line models (all algorithms)
+│   ├── 06-per-line-models-cyclical.ipynb # Same with sin/cos cyclical feature encoding
+│   └── experimental/                     # Neural network experiments (need TensorFlow)
 │
-├── 2015/
-│   ├── 05-per-line-models-2015.ipynb           # Per-line models for 2015 (all algorithms)
-│   ├── 06-per-line-models-2015-cyclical.ipynb  # Same with sin/cos cyclical feature encoding
-│   └── variables.py                            # Holiday & holiday-eve definitions per year
+├── src/fortaleza_bus_forecast/           # Reusable Python package
+│   ├── config.py                         # Feature lists, constants, paths
+│   ├── data/                             # Data loading, holidays, preprocessing
+│   ├── models/                           # Model training, evaluation, metrics
+│   └── visualization/                    # Thesis-quality plotting functions
 │
-├── other-related-notebooks/          # Experimental: time-series framing, neural networks
-│   ├── 07-time-series-framing.ipynb
-│   ├── 08-neural-net-time-series.ipynb
-│   └── 09-neural-net-standard.ipynb
+├── scripts/                              # Data pipeline scripts
+│   ├── data_builder.py                   # Raw CSV → aggregated hourly validations per line
+│   ├── zero_filler.py                    # Fills missing (line, hour) combos with 0
+│   └── helper-funs.py                    # Shared utilities: metrics, week_of_month()
 │
-├── helper_scripts/
-│   ├── data_builder.py               # Raw CSV → aggregated hourly validations per line
-│   ├── zero_filler.py                # Fills missing (line, hour) combos with 0
-│   └── helper-funs.py                # Shared utilities: metrics, week_of_month()
-│
-├── model-data/               # Pre-processed CSVs for top-100 bus lines (by year)
-├── performances/                     # Model performance CSVs (per line, per config)
-├── predict-vs-real/                  # Prediction output CSVs for plotting
-├── images/                           # Generated visualizations (PDFs, PNGs)
-└── requirements.txt
+├── model-data/                           # Pre-processed CSVs (extract with `make data`)
+├── performances/                         # Model performance CSVs (per line, per config)
+├── predict-vs-real/                      # Prediction output CSVs for plotting
+├── images/                               # Generated visualizations (PDFs, PNGs)
+└── Makefile                              # `make data` to extract datasets
 ```
 
 ## 🔬 Methodology
@@ -133,11 +133,13 @@ make data
 
 ### Running
 
-1. Start with **`01-data-processing.ipynb`** to understand the data pipeline
-2. Explore **`02-data-visualization.ipynb`** for EDA and seasonality analysis
-3. Run **`2015/05-per-line-models-2015.ipynb`** for the core modeling workflow
-4. See **`04-results.ipynb`** for aggregated results and visualizations
-5. Check **`03-cross-year-comparison.ipynb`** for cross-year generalization analysis
+All notebooks are in the `notebooks/` folder and can be run independently:
+
+1. **`02-data-visualization.ipynb`** — EDA and seasonality analysis
+2. **`05-per-line-models.ipynb`** — Core modeling workflow (train & evaluate)
+3. **`04-results.ipynb`** — Visualize predictions vs actual values
+4. **`03-cross-year-comparison.ipynb`** — Cross-year generalization analysis
+5. **`01-data-processing.ipynb`** — Data pipeline reference (needs raw data)
 
 ---
 
@@ -278,11 +280,13 @@ make data
 
 #### Execução
 
-1. Comece com **`01-data-processing.ipynb`** para entender o pipeline de dados
-2. Explore **`02-data-visualization.ipynb`** para EDA e análise de sazonalidade
-3. Execute **`2015/05-per-line-models-2015.ipynb`** para o fluxo principal de modelagem
-4. Veja **`04-results.ipynb`** para resultados agregados e visualizações
-5. Confira **`03-cross-year-comparison.ipynb`** para análise de generalização entre anos
+Todos os notebooks estão na pasta `notebooks/` e podem ser executados independentemente:
+
+1. **`02-data-visualization.ipynb`** — EDA e análise de sazonalidade
+2. **`05-per-line-models.ipynb`** — Fluxo principal de modelagem (treino e avaliação)
+3. **`04-results.ipynb`** — Visualização de predições vs valores reais
+4. **`03-cross-year-comparison.ipynb`** — Análise de generalização entre anos
+5. **`01-data-processing.ipynb`** — Referência do pipeline de dados (precisa dos dados brutos)
 
 ### Orientação
 

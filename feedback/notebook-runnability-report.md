@@ -19,9 +19,9 @@ The processed versions exist in `model-data/` (filtered to top-100 lines, with f
 
 ---
 
-## 🔴 API Breakage: `pandas .append()` in zero_filler.py
+## 🔴 API Breakage: `pandas .append()` in scripts/zero_filler.py
 
-`helper_scripts/zero_filler.py` still has one `df.append()` call. This was **removed in pandas 2.0** (current: 2.3.3).
+`scripts/zero_filler.py` still has one `df.append()` call. This was **removed in pandas 2.0** (current: 2.3.3).
 
 **Fix:** Replace with `pd.concat()`.
 
@@ -37,6 +37,6 @@ All 3 neural network notebooks (07, 08, 09) import `tensorflow` and read `./df_i
 
 ## ✅ Fixed (previously reported)
 
-- ~~Root `variables.py` missing~~ — Created, re-exports from `2015/variables.py`
+- ~~Root `variables.py` missing~~ — Removed; holidays now in `src/fortaleza_bus_forecast/data/holidays.py`
 - ~~`OneHotEncoder(sparse=False)` deprecated~~ — Updated to `sparse_output=False`
 - ~~Random seeds missing~~ — `RANDOM_SEED = 42` added to all relevant notebooks
