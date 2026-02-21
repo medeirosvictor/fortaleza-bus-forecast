@@ -1,82 +1,42 @@
 """
 Data Loader — Read processed CSVs into DataFrames.
 
-Handles year-specific file paths, delimiter detection, and datetime parsing.
+Handles year-specific file paths and datetime parsing.
 """
 
 import os
 import pandas as pd
 
-from ..config import DATA_DIR, PROJECT_ROOT, TARGET_COL, SUPPORTED_YEARS
+from ..config import DATA_DIR, TARGET_COL, SUPPORTED_YEARS
 
 
-def load_year_data(year: int, zerofilled: bool = True, data_dir: str = None) -> pd.DataFrame:
+def load_year_data(year: int, data_dir: str = None) -> pd.DataFrame:
     """
     Load the processed dataset for a given year.
 
     Parameters:
-        year:       One of 2015, 2018, 2020
-        zerofilled: If True, load the zero-filled version (default)
-        data_dir:   Override data directory (default: project's dados-para-modelos/)
+        year:     One of 2015, 2018, 2020
+        data_dir: Override data directory (default: project's model-data/)
 
     Returns:
-        DataFrame with parsed datetime column and consistent column names.
+        DataFrame with parsed datetime column.
     """
     if year not in SUPPORTED_YEARS:
         raise ValueError(f"Year {year} not supported. Choose from {SUPPORTED_YEARS}")
 
     base_dir = data_dir or DATA_DIR
+    filepath = os.path.join(base_dir, str(year), f"top100_lines_{year}.csv")
 
-    # Try dados-para-modelos first, then project root
-    candidates = [
-        os.path.join(base_dir, str(year), f"top100_linhas_data_model_{year}.csv"),
-        os.path.join(base_dir, str(year), f"top100_linhas_data_model_{year}_ciclycal.csv"),
-        os.path.join(PROJECT_ROOT, f"data_input_zerofill_{year}.csv"),
-        os.path.join(PROJECT_ROOT, f"data_input_nozerofill_{year}.csv"),
-    ]
-
-    if not zerofilled:
-        # Prefer non-zerofilled
-        candidates = [
-            os.path.join(PROJECT_ROOT, f"data_input_nozerofill_{year}.csv"),
-        ] + candidates
-
-    filepath = None
-    for c in candidates:
-        if os.path.exists(c):
-            filepath = c
-            break
-
-    if filepath is None:
+    if not os.path.exists(filepath):
         raise FileNotFoundError(
-            f"No data file found for year {year}. "
-            f"Searched: {candidates}"
+            f"No data file found for year {year} at {filepath}. "
+            f"Run 'make data' to extract the datasets."
         )
 
-    # Detect delimiter
-    with open(filepath, "r") as f:
-        first_line = f.readline()
-    delimiter = ";" if ";" in first_line else ","
+    df = pd.read_csv(filepath)
 
-    df = pd.read_csv(filepath, delimiter=delimiter)
-
-    # Parse datetime
     if "data_hora" in df.columns:
-        df["data_hora"] = pd.to_datetime(
-            df["data_hora"],
-            format="%Y/%m/%d %H:%M:%S",
-            errors="coerce",
-        )
-        # Fallback for other date formats
-        mask = df["data_hora"].isna()
-        if mask.any():
-            df.loc[mask, "data_hora"] = pd.to_datetime(
-                df.loc[mask, "data_hora"], errors="coerce"
-            )
-
-    # Normalize target column name
-    if "validacoes_por_hora" in df.columns and TARGET_COL not in df.columns:
-        df = df.rename(columns={"validacoes_por_hora": TARGET_COL})
+        df["data_hora"] = pd.to_datetime(df["data_hora"], errors="coerce")
 
     return df
 

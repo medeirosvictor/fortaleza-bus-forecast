@@ -120,7 +120,7 @@ with open(".gitignore", "r") as f:
     gi = f.read()
 check(".ipynb_checkpoints in .gitignore", "ipynb_checkpoints" in gi)
 check("__pycache__ in .gitignore", "__pycache__" in gi)
-check("dados-para-modelos/README.md exists", os.path.exists("dados-para-modelos/README.md"))
+check("model-data/README.md exists", os.path.exists("model-data/README.md"))
 
 # ── Additional Checks ───────────────────────────────────────
 print("\n── Additional Checks ──")

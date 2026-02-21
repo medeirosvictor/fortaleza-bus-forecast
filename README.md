@@ -50,7 +50,7 @@ Best-performing models achieve **R² > 0.95** on high-traffic bus lines, accurat
 │   ├── zero_filler.py                # Fills missing (line, hour) combos with 0
 │   └── helper-funs.py                # Shared utilities: metrics, week_of_month()
 │
-├── dados-para-modelos/               # Pre-processed CSVs for top-100 bus lines (by year)
+├── model-data/               # Pre-processed CSVs for top-100 bus lines (by year)
 ├── performances/                     # Model performance CSVs (per line, per config)
 ├── predict-vs-real/                  # Prediction output CSVs for plotting
 ├── images/                           # Generated visualizations (PDFs, PNGs)
@@ -110,7 +110,7 @@ Best-performing models achieve **R² > 0.95** on high-traffic bus lines, accurat
 
 - **2020 data includes the COVID-19 pandemic period**, which drastically reduced ridership. Cross-year comparisons involving 2020 should be interpreted with this context.
 - **Zero-filling:** Hours with no recorded validations are explicitly filled with 0-count rows, distinguishing "no passengers" from "missing data."
-- Raw data files are not included in the repository (gitignored). The pre-processed model-ready CSVs are available in `dados-para-modelos/`.
+- Raw data files are not included in the repository (gitignored). The pre-processed model-ready CSVs are available in `model-data/`.
 
 ## 🚀 Getting Started
 
@@ -126,6 +126,9 @@ git clone https://github.com/medeirosvictor/fortaleza-bus-forecast.git
 cd fortaleza-bus-forecast
 pip install -e ".[full]"   # Installs package + xgboost, lightgbm, shap
 # or: pip install -r requirements.txt  (minimal deps only)
+
+# Extract the model-ready datasets (required for notebooks)
+make data
 ```
 
 ### Running
@@ -253,7 +256,7 @@ Os melhores modelos alcançaram **R² > 0,95** nas linhas de maior movimento, ca
 
 - **Os dados de 2020 incluem o período da pandemia de COVID-19**, que reduziu drasticamente o número de passageiros. Comparações entre anos envolvendo 2020 devem ser interpretadas com esse contexto.
 - **Zero-fill:** Horas sem validações registradas são explicitamente preenchidas com linhas de contagem 0, distinguindo "sem passageiros" de "dado ausente."
-- Os arquivos de dados brutos não estão incluídos no repositório (gitignored). Os CSVs pré-processados prontos para modelagem estão disponíveis em `dados-para-modelos/`.
+- Os arquivos de dados brutos não estão incluídos no repositório (gitignored). Os CSVs pré-processados prontos para modelagem estão disponíveis em `model-data/`.
 
 ### 🚀 Como Executar
 
@@ -268,6 +271,9 @@ Os melhores modelos alcançaram **R² > 0,95** nas linhas de maior movimento, ca
 git clone https://github.com/medeirosvictor/fortaleza-bus-forecast.git
 cd fortaleza-bus-forecast
 pip install -e ".[full]"   # Instala o pacote + xgboost, lightgbm, shap
+
+# Extrair os datasets prontos para modelagem (necessário para os notebooks)
+make data
 ```
 
 #### Execução

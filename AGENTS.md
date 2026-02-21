@@ -22,7 +22,7 @@ Raw CSV data (fare validations)
   → helper_scripts/data_builder.py     # Parse, aggregate by line+hour, extract temporal features
   → helper_scripts/zero_filler.py      # Fill missing hour slots with 0 validations
   → data_input_zerofill_YYYY.csv       # Complete dataset (gitignored)
-  → dados-para-modelos/                # Filtered top-100 bus lines, model-ready CSVs
+  → model-data/                # Filtered top-100 bus lines, model-ready CSVs
   → Notebooks (training, evaluation)   # Per-line models, cross-year comparison
   → performances/                      # CSV results (R², RMSE, MAE, MAPE)
   → predict-vs-real/                   # Predicted vs actual values for plotting
@@ -90,7 +90,7 @@ src/fortaleza_bus_forecast/         # Reusable Python package (Phase 3.1)
     __init__.py
     plots.py                        # Thesis-quality plots: pred vs actual, hourly, comparisons
 
-dados-para-modelos/                 # Pre-processed CSVs for top-100 lines (2015, 2018, 2020)
+model-data/                 # Pre-processed CSVs for top-100 lines (2015, 2018, 2020)
 performances/                       # Model performance CSVs (per line, per config)
 predict-vs-real/                    # Prediction output CSVs for plotting
 images/                             # Generated visualizations (PDFs)
@@ -133,7 +133,7 @@ Computed via `src/fortaleza_bus_forecast/models/evaluator.py` (or legacy `helper
 
 ## Important Conventions
 
-- Data files (CSVs, raw data) are **gitignored** — only processed/model-ready CSVs in `dados-para-modelos/` are tracked.
+- Data files (CSVs, raw data) are **gitignored** — only processed/model-ready CSVs in `model-data/` are tracked.
 - Column names mix Portuguese and English (`validacoes_por_hora` vs `validations_per_hour`) depending on the notebook/year.
 - The project uses **Jupyter notebooks** as the primary development environment. Shared logic lives in `src/fortaleza_bus_forecast/` (installable via `pip install -e .`).
 - Python 3.10+ with pandas, scikit-learn, xgboost, lightgbm, matplotlib, seaborn, numpy.

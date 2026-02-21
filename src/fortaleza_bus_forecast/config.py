@@ -6,7 +6,7 @@ import os
 
 # ── Paths ──
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DATA_DIR = os.path.join(PROJECT_ROOT, "dados-para-modelos")
+DATA_DIR = os.path.join(PROJECT_ROOT, "model-data")
 PERFORMANCES_DIR = os.path.join(PROJECT_ROOT, "performances")
 PREDICTIONS_DIR = os.path.join(PROJECT_ROOT, "predict-vs-real")
 IMAGES_DIR = os.path.join(PROJECT_ROOT, "images")
@@ -49,6 +49,6 @@ SUPPORTED_YEARS = [2015, 2018, 2020]
 # ── Data coverage per year (inclusive month ranges) ──
 YEAR_COVERAGE = {
     2015: (1, 12),   # Full year
-    2018: (1, 8),    # Jan–Aug only
+    2018: (1, 7),    # Jan–Jul only
     2020: (3, 12),   # Mar–Dec only (COVID, no Jan/Feb data)
 }

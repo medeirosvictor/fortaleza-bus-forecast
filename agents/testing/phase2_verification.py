@@ -215,7 +215,7 @@ check("TimeSeriesSplit used", ts_split_found,
 
 # If no formal TimeSeriesSplit, check if limitation is documented
 if not ts_split_found:
-    docs_to_check = ["README.md", "AGENTS.md", "dados-para-modelos/README.md",
+    docs_to_check = ["README.md", "AGENTS.md", "model-data/README.md",
                      "feedback/agent-user feedback.md", "feedback/data-and-thesis-analysis.md"]
     for doc in docs_to_check:
         if os.path.exists(doc) and file_contains(doc, "time", "split"):
