@@ -30,39 +30,75 @@ Best-performing models achieve **R² > 0.95** on high-traffic bus lines, accurat
 ## 🏗️ Project Structure
 
 ```
-├── notebooks/
-│   ├── 01-data-processing.ipynb          # Data wrangling pipeline (reference — needs raw data)
-│   ├── 02-data-visualization.ipynb       # EDA — hourly, daily, weekly, monthly seasonality
-│   ├── 03-cross-year-comparison.ipynb    # Cross-year comparison (2015/2018/2020), ensemble models
-│   ├── 04-results.ipynb                  # Aggregated results, scatter plots (predicted vs actual)
-│   ├── 05-per-line-models.ipynb          # Per-line models (all algorithms)
-│   ├── 06-per-line-models-cyclical.ipynb # Same with sin/cos cyclical feature encoding
-│   └── experimental/                     # Neural network experiments (need TensorFlow)
+├── notebooks/                            # Jupyter notebooks (run independently)
+│   ├── 02-data-visualization.ipynb       #   EDA — hourly, daily, weekly, monthly seasonality
+│   ├── 03-cross-year-comparison.ipynb    #   Cross-year comparison (2015/2018/2020), ensembles
+│   ├── 04-results.ipynb                  #   Scatter plots — predicted vs actual
+│   ├── 05-per-line-models.ipynb          #   Per-line models (10+ algorithms)
+│   ├── 06-per-line-models-cyclical.ipynb #   Same with sin/cos cyclical features
+│   ├── 01-data-processing.ipynb          #   Data pipeline reference (needs raw data)
+│   └── experimental/                     #   Neural network experiments (need TensorFlow)
 │
 ├── src/fortaleza_bus_forecast/           # Reusable Python package
-│   ├── config.py                         # Feature lists, constants, paths
-│   ├── data/                             # Data loading, holidays, preprocessing
-│   ├── models/                           # Model training, evaluation, metrics
-│   └── visualization/                    # Thesis-quality plotting functions
+│   ├── config.py                         #   Feature lists, constants, paths
+│   ├── data/                             #   Data loading, holidays, preprocessing
+│   ├── models/                           #   Model training, evaluation, metrics
+│   └── visualization/                    #   Plotting functions
 │
-├── scripts/                              # Data pipeline scripts
-│   ├── data_builder.py                   # Raw CSV → aggregated hourly validations per line
-│   ├── zero_filler.py                    # Fills missing (line, hour) combos with 0
-│   └── helper-funs.py                    # Shared utilities: metrics, week_of_month()
+├── scripts/                              # Data pipeline utilities
+│   ├── data_builder.py                   #   Raw CSV → hourly aggregation per line
+│   ├── zero_filler.py                    #   Fill missing (line, hour) with 0
+│   └── helper-funs.py                    #   Shared utils: metrics, week_of_month()
 │
-├── model-data/                           # Pre-processed CSVs (extract with `make data`)
-├── performances/                         # Model performance CSVs (per line, per config)
-├── predict-vs-real/                      # Prediction output CSVs for plotting
-├── images/                               # Generated visualizations (PDFs, PNGs)
-└── Makefile                              # `make data` to extract datasets
+├── model-data/                           # Datasets (extract with `make data`)
+├── performances/                         # Model performance CSVs
+├── predict-vs-real/                      # Prediction output CSVs
+├── images/                               # Generated plots (PDFs, PNGs)
+├── feedback/                             # Improvement notes and analysis
+├── Makefile                              # `make data` / `make clean-data`
+└── pyproject.toml                        # Package config
 ```
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Python 3.10+
+- Jupyter Notebook or JupyterLab
+
+### Installation
+
+```bash
+git clone https://github.com/medeirosvictor/fortaleza-bus-forecast.git
+cd fortaleza-bus-forecast
+pip install -e ".[full]"   # Installs package + xgboost, lightgbm, shap
+make data                  # Extract model-ready datasets
+```
+
+### Running the Notebooks
+
+All notebooks live in `notebooks/` and can be run **independently** — no ordering required:
+
+| Notebook | What it does |
+|----------|-------------|
+| **`02-data-visualization`** | EDA — seasonality patterns by hour, day, week, month |
+| **`05-per-line-models`** | Train & evaluate 10+ models per bus line |
+| **`04-results`** | Scatter plots of predicted vs actual boarding counts |
+| **`03-cross-year-comparison`** | Train on one year, predict another — generalization analysis |
+| **`06-per-line-models-cyclical`** | Same as 05 but with sin/cos cyclical feature encoding |
+| `01-data-processing` | *Reference only* — shows how raw data was processed (needs raw CSVs) |
 
 ## 🔬 Methodology
 
 ### Data
 
-- **Source:** Fortaleza's electronic fare validation system (smart card tap data)
-- **Years analyzed:** 2015, 2018, 2020
+| Year | Period | Rows | Notes |
+|------|--------|------|-------|
+| 2015 | Jan – Dec | 795K | Full year |
+| 2018 | Jan – Jul | 410K | Only 7 months available from ETUFOR |
+| 2020 | Mar – Dec | 632K | No Jan/Feb; COVID-19 impact from March onward |
+
+- **Source:** ETUFOR (Empresa de Transporte Urbano de Fortaleza) — electronic fare validation (smart card taps)
 - **Scope:** Top 100 bus lines by ridership volume
 - **Granularity:** Hourly passenger counts per bus line
 
@@ -71,12 +107,12 @@ Best-performing models achieve **R² > 0.95** on high-traffic bus lines, accurat
 | Feature | Description |
 |---------|-------------|
 | `hour`, `hour_sin`, `hour_cos` | Hour of day + cyclical encoding |
-| `day_of_week` + one-hot columns | Day of week (Sunday=0 … Saturday=6) |
+| `day_of_week` + one-hot columns | Day of week (Monday=0 … Sunday=6) |
 | `day_of_month`, `day_of_year` | Calendar position |
 | `month`, `week_of_month` | Monthly/weekly position |
 | `holiday`, `holiday_eve` | Brazilian national + Ceará/Fortaleza local holidays |
 
-**Key insight:** Cyclical encoding (sin/cos) of temporal features preserves the circular continuity that one-hot encoding destroys — hour 23 is close to hour 0, December is close to January.
+**Key insight:** Cyclical encoding (sin/cos) of temporal features preserves circular continuity — hour 23 is close to hour 0, December is close to January.
 
 ### Models Compared
 
@@ -106,64 +142,25 @@ Best-performing models achieve **R² > 0.95** on high-traffic bus lines, accurat
 - **Walk-forward experiments:** Train on N months, predict the next period (1–2 weeks ahead)
 - **Cross-year comparison:** Models trained on 2015 data evaluated against 2018/2020 patterns
 
-## ⚠️ Notes
-
-- **2020 data includes the COVID-19 pandemic period**, which drastically reduced ridership. Cross-year comparisons involving 2020 should be interpreted with this context.
-- **Zero-filling:** Hours with no recorded validations are explicitly filled with 0-count rows, distinguishing "no passengers" from "missing data."
-- Raw data files are not included in the repository (gitignored). The pre-processed model-ready CSVs are available in `model-data/`.
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Python 3.10+
-- Jupyter Notebook or JupyterLab
-
-### Installation
-
-```bash
-git clone https://github.com/medeirosvictor/fortaleza-bus-forecast.git
-cd fortaleza-bus-forecast
-pip install -e ".[full]"   # Installs package + xgboost, lightgbm, shap
-# or: pip install -r requirements.txt  (minimal deps only)
-
-# Extract the model-ready datasets (required for notebooks)
-make data
-```
-
-### Running
-
-All notebooks are in the `notebooks/` folder and can be run independently:
-
-1. **`02-data-visualization.ipynb`** — EDA and seasonality analysis
-2. **`05-per-line-models.ipynb`** — Core modeling workflow (train & evaluate)
-3. **`04-results.ipynb`** — Visualize predictions vs actual values
-4. **`03-cross-year-comparison.ipynb`** — Cross-year generalization analysis
-5. **`01-data-processing.ipynb`** — Data pipeline reference (needs raw data)
-
----
-
 ## 📦 Python Package
 
-The project includes a reusable Python package at `src/fortaleza_bus_forecast/`:
+The project includes a reusable package at `src/fortaleza_bus_forecast/`:
 
 ```python
 from fortaleza_bus_forecast.data import load_year_data, get_holidays
-from fortaleza_bus_forecast.data.preprocessor import prepare_features
 from fortaleza_bus_forecast.models import build_model_suite, train_and_evaluate
 from fortaleza_bus_forecast.visualization import plot_predictions_vs_actual
 
-# Load data
-df = load_year_data(2015)
-
-# Feature engineering
-df = prepare_features(df, year=2015, cyclical=False)
-
-# Build and train models
-models = build_model_suite()
+# Load and explore
+df = load_year_data(2015)            # 795K rows, 100 bus lines
+line41 = load_line_data(2015, 41)    # Single line
 ```
 
-Install in development mode: `pip install -e ".[full]"`
+## ⚠️ Notes
+
+- **2020 includes COVID-19** — ridership dropped dramatically. Cross-year comparisons involving 2020 should be interpreted with this context.
+- **Zero-filling:** Hours with no validations are filled with 0-count rows, distinguishing "no passengers" from "missing data."
+- **Raw data** is not in the repo. Pre-processed datasets ship as `model-data/data.zip` (15 MB, extracted via `make data`).
 
 ---
 
@@ -194,103 +191,70 @@ Os melhores modelos alcançaram **R² > 0,95** nas linhas de maior movimento, ca
 | Ridge Regression | 0,882 | 151,8 | 83,1 |
 | SVR | −0,001 | 441,4 | 354,3 |
 
-*Exemplo: Linha 41 (2015) — uma das mais movimentadas de Fortaleza. Treino em 80% do ano, teste em 20%.*
+*Exemplo: Linha 41 (2015) — uma das mais movimentadas de Fortaleza.*
 
-### 🔬 Metodologia
+### 🔬 Dados
 
-#### Dados
+| Ano | Período | Linhas | Observações |
+|-----|---------|--------|------------|
+| 2015 | Jan – Dez | 795 mil linhas | Ano completo |
+| 2018 | Jan – Jul | 410 mil linhas | Apenas 7 meses disponíveis |
+| 2020 | Mar – Dez | 632 mil linhas | Sem Jan/Fev; impacto da COVID-19 |
 
-- **Fonte:** Sistema de validação eletrônica de tarifas (dados de cartão) de Fortaleza
-- **Anos analisados:** 2015, 2018, 2020
+- **Fonte:** ETUFOR (Empresa de Transporte Urbano de Fortaleza)
 - **Escopo:** Top 100 linhas de ônibus por volume de passageiros
 - **Granularidade:** Contagem horária de passageiros por linha
 
-#### Engenharia de Features
+### Engenharia de Features
 
 | Feature | Descrição |
 |---------|-----------|
-| `hora`, `hora_sin`, `hora_cos` | Hora do dia + codificação cíclica |
-| `d_semana` + colunas one-hot | Dia da semana (Domingo=0 … Sábado=6) |
+| `hora`, `hour_sin`, `hour_cos` | Hora do dia + codificação cíclica |
+| `d_semana` + colunas one-hot | Dia da semana (Segunda=0 … Domingo=6) |
 | `d_mes`, `d_ano` | Posição no calendário |
 | `mes`, `semana_do_mes` | Posição mensal/semanal |
 | `feriado`, `vespera_feriado` | Feriados nacionais + locais de Fortaleza/Ceará |
 
-**Insight principal:** A codificação cíclica (sin/cos) das features temporais preserva a continuidade circular que o one-hot encoding destrói — a hora 23 fica próxima da hora 0, dezembro fica próximo de janeiro.
+**Insight principal:** A codificação cíclica (sin/cos) preserva a continuidade circular — a hora 23 fica próxima da hora 0, dezembro fica próximo de janeiro.
 
-#### Modelos Comparados
+### Modelos Comparados
 
 | Modelo | Biblioteca |
 |--------|------------|
 | Regressão Linear | scikit-learn |
 | Regressão Ridge | scikit-learn |
-| SVR (Support Vector Regression) | scikit-learn |
+| SVR | scikit-learn |
 | Árvore de Decisão | scikit-learn |
 | Random Forest | scikit-learn |
-| Bagging (base: Árvore de Decisão) | scikit-learn |
+| Bagging (Árvore de Decisão) | scikit-learn |
 | Gradient Boosting | scikit-learn |
 | XGBoost | xgboost |
 | LightGBM | lightgbm |
-| **Stacking Ensemble** (meta-learner: XGBoost) | scikit-learn |
-
-#### Métricas de Avaliação
-
-- **R²** — Coeficiente de determinação
-- **RMSE** — Raiz do erro quadrático médio
-- **MAE** — Erro absoluto médio
-- **MAPE** — Erro percentual absoluto médio
-
-#### Estratégia de Treinamento
-
-- **Modelos por linha:** Cada uma das 100 linhas recebe seu próprio modelo treinado
-- **Walk-forward:** Treina com N meses, prevê o próximo período (1–2 semanas à frente)
-- **Comparação entre anos:** Modelos treinados em 2015 avaliados contra padrões de 2018/2020
-
-### Principais Contribuições
-
-- **Comparação de 10+ algoritmos de ML** (Regressão Linear, Ridge, SVR, Árvore de Decisão, Random Forest, Bagging, Gradient Boosting, XGBoost, LightGBM e Stacking Ensemble)
-- **Engenharia de features temporais** com codificação cíclica (sin/cos) para hora, dia da semana, mês etc.
-- **Flags de feriados** nacionais brasileiros e locais de Fortaleza/Ceará
-- **Estratégia de zero-fill** para distinguir "zero passageiros" de "dado ausente"
-- **Análise comparativa entre anos**, incluindo o impacto da pandemia de COVID-19 nos dados de 2020
-- **Modelos por linha** — cada uma das 100 linhas recebe seu próprio modelo treinado
-
-### ⚠️ Observações
-
-- **Os dados de 2020 incluem o período da pandemia de COVID-19**, que reduziu drasticamente o número de passageiros. Comparações entre anos envolvendo 2020 devem ser interpretadas com esse contexto.
-- **Zero-fill:** Horas sem validações registradas são explicitamente preenchidas com linhas de contagem 0, distinguindo "sem passageiros" de "dado ausente."
-- Os arquivos de dados brutos não estão incluídos no repositório (gitignored). Os CSVs pré-processados prontos para modelagem estão disponíveis em `model-data/`.
+| **Stacking Ensemble** (XGBoost) | scikit-learn |
 
 ### 🚀 Como Executar
-
-#### Pré-requisitos
-
-- Python 3.10+
-- Jupyter Notebook ou JupyterLab
-
-#### Instalação
 
 ```bash
 git clone https://github.com/medeirosvictor/fortaleza-bus-forecast.git
 cd fortaleza-bus-forecast
 pip install -e ".[full]"   # Instala o pacote + xgboost, lightgbm, shap
-
-# Extrair os datasets prontos para modelagem (necessário para os notebooks)
-make data
+make data                  # Extrai os datasets
 ```
 
-#### Execução
+Todos os notebooks estão em `notebooks/` e podem ser executados independentemente.
 
-Todos os notebooks estão na pasta `notebooks/` e podem ser executados independentemente:
-
-1. **`02-data-visualization.ipynb`** — EDA e análise de sazonalidade
-2. **`05-per-line-models.ipynb`** — Fluxo principal de modelagem (treino e avaliação)
-3. **`04-results.ipynb`** — Visualização de predições vs valores reais
-4. **`03-cross-year-comparison.ipynb`** — Análise de generalização entre anos
-5. **`01-data-processing.ipynb`** — Referência do pipeline de dados (precisa dos dados brutos)
+| Notebook | O que faz |
+|----------|-----------|
+| **`02-data-visualization`** | EDA — padrões de sazonalidade |
+| **`05-per-line-models`** | Treino e avaliação de 10+ modelos por linha |
+| **`04-results`** | Scatter plots — predição vs real |
+| **`03-cross-year-comparison`** | Generalização entre anos |
+| **`06-per-line-models-cyclical`** | Variante com features cíclicas (sin/cos) |
 
 ### Orientação
 
-- **Universidade:** Universidade de Fortaleza (UNIFOR) — Centro de Ciências Tecnológicas, Curso de Ciência da Computação
+- **Universidade:** Universidade de Fortaleza (UNIFOR) — Centro de Ciências Tecnológicas, Ciência da Computação
+- **Orientador:** Prof. Dr. Carlos Caminha
 - **Dados:** ETUFOR (Empresa de Transporte Urbano de Fortaleza)
 
 ---
@@ -302,4 +266,5 @@ This project was developed as an undergraduate thesis at the University of Forta
 ## 🤝 Acknowledgments
 
 - **ETUFOR** (Empresa de Transporte Urbano de Fortaleza) for the fare validation data
+- **Prof. Dr. Carlos Caminha** — thesis advisor
 - University of Fortaleza (UNIFOR) — Centro de Ciências Tecnológicas, Computer Science
